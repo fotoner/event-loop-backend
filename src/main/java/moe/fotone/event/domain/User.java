@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -60,6 +61,12 @@ public class User extends BaseTimeEntity{
 
     @Column
     private String refreshToken;
+
+    @OneToMany(targetEntity = Playlist.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Playlist> playlists;
+
+    @OneToMany(targetEntity = Song.class)
+    private List<Song> songs;
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
