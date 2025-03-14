@@ -28,9 +28,15 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2Login(oauth -> oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService)))
+                .headers(
+                        headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                )
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .oauth2Login(
+                        oauth -> oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))
+                )
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest.anyRequest().permitAll())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

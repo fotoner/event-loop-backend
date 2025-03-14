@@ -1,6 +1,5 @@
 package moe.fotone.event.api.user.repository;
 
-
 import jakarta.validation.constraints.NotNull;
 import moe.fotone.event.domain.SocialType;
 import moe.fotone.event.domain.User;

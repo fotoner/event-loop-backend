@@ -28,20 +28,24 @@ public class TwitterUserInfo extends OAuth2UserInfo{
     }
 
     @Override
-    public String getEmail() {
-        Map<String, Object> data = getData();
-        return (String) data.get("id");
-    }
-
-    @Override
     public String getUsername() {
         Map<String, Object> data = getData();
         return (String) data.get("username");
     }
 
+    public String getName() {
+        Map<String, Object> data = getData();
+        return (String) data.get("name");
+    }
+
+    public String getDescription() {
+        Map<String, Object> data = getData();
+        return (String) data.get("description");
+    }
+
     @Override
     public String getPicture() {
         Map<String, Object> data = getData();
-        return (String) data.get("id");
+        return (String) data.get("profile_image_url");
     }
 }

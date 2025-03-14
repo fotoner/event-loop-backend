@@ -28,8 +28,10 @@ public class User extends BaseTimeEntity{
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Email
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column
     private String email;
 
     @Column(nullable = false)
@@ -63,15 +65,16 @@ public class User extends BaseTimeEntity{
         this.refreshToken = refreshToken;
     }
 
-    public static User createUser(String socialId, String email, String name, String picture) {
+    public static User createUser(String socialId, String username, String name, String description, String picture) {
         return User.builder()
                 .socialType(SocialType.TWITTER)
                 .socialId(socialId)
-                .email(email)
-                .username(name)
+                .username(username)
+                .name(name)
+                .introduce(description)
                 .picture(picture)
                 .activated(true)
-                .role(Role.GUEST)
+                .role(Role.USER)
                 .build();
     }
 

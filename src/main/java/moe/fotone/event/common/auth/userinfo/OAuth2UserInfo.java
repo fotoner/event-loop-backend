@@ -9,9 +9,7 @@ public abstract class OAuth2UserInfo {
         this.attributes = attributes;
     }
 
-    public abstract String getId(); // 소셜 식별 값 : 구글 (sub)
-
-    public abstract String getEmail();
+    public abstract String getId();
 
     public abstract String getUsername();
 

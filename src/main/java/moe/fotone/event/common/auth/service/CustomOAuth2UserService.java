@@ -31,7 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         return new TwitterUser(
                 user.getId(),
-                user.getEmail(),
+                user.getSocialId(),
                 user.getRole(),
                 List.of(simpleGrantedAuthority),
                 oAuth2User.getAttributes()
