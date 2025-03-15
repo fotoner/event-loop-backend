@@ -92,7 +92,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (uri.startsWith("/playlist")) {
-            return true;
+            return !request.getMethod().equals("DELETE") && !request.getMethod().equals("PATCH");
         }
 
         if (uri.startsWith("/swagger-ui")) {

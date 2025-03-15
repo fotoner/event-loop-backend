@@ -50,4 +50,9 @@ public class PlaylistController {
     public BaseResponse<List<PlaylistResponse>> getPlaylistsByUser(@PathVariable Long id) {
         return BaseResponse.OK(playlistService.getPlaylistsByUser(id));
     }
+
+    @DeleteMapping("/{id}")
+    public BaseResponse<Boolean> deletePlaylist(@AuthenticationPrincipal TwitterUser user, @PathVariable Long id) throws IllegalAccessException {
+        return BaseResponse.OK(playlistService.deletePlaylist(user.getUserId(), id));
+    }
 }

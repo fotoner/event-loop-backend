@@ -37,7 +37,7 @@ public class Playlist extends BaseTimeEntity{
     @OneToMany(targetEntity = Song.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Song> songs;
 
-    @OneToMany(targetEntity = Taglist.class)
+    @OneToMany(targetEntity = Taglist.class, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Taglist> taglist;
 
     public static Playlist createPlaylist(String title, String description, String cover, User user){

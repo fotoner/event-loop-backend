@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -155,5 +152,16 @@ public class PlaylistService {
         return playlists.stream()
                 .map(playlist -> PlaylistResponse.fromEntity(playlist, false))
                 .collect(Collectors.toList());
+    }
+
+    public boolean deletePlaylist(Long userId, Long playlistId) throws IllegalAccessException {
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(NoSuchElementException::new);
+
+        if (!playlist.getUser().getId().equals(userId)) {
+            throw new IllegalAccessException();
+        }
+
+        playlistRepository.delete(playlist);
+        return true;
     }
 }
