@@ -19,4 +19,12 @@ public class BaseResponse<T>{
     public static <T> BaseResponse<T> OK(T data) {
         return new BaseResponse<>(HttpStatus.OK, "요청이 성공적으로 처리되었습니다.", data);
     }
+
+    public static <T> BaseResponse<T> BadRequest(T data) {
+        return new BaseResponse<>(HttpStatus.BAD_REQUEST, "요청이 실패했습니다", data);
+    }
+
+    public static <T> BaseResponse<T> ServerError(T data) {
+        return new BaseResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러 발생", data);
+    }
 }

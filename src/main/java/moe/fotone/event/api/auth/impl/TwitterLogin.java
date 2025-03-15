@@ -73,6 +73,7 @@ public class TwitterLogin {
         JsonNode jsonNode = objectMapper.readTree(response.getBody());
         return jsonNode.get("access_token").asText();
     }
+
     @Transactional
     public User getUser(String token) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();

@@ -12,11 +12,9 @@ import java.util.List;
 @Setter
 public class Tag extends BaseTimeEntity{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 60)
     private String name;
-
-    @OneToMany(targetEntity = Taglist.class, fetch = FetchType.LAZY)
-    private List<Taglist> eventTags = new ArrayList<>();
 }

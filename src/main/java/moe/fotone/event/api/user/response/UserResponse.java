@@ -12,6 +12,8 @@ public class UserResponse {
 
     private String username;
 
+    private String name;
+
     @Email
     private String email;
 
@@ -26,6 +28,7 @@ public class UserResponse {
     public static UserResponse of(User user) {
         return UserResponse.builder()
                 .userId(user.getId())
+                .name(user.getName())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .isPublic(user.isPublic())

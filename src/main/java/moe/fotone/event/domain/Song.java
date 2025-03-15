@@ -23,11 +23,23 @@ public class Song extends BaseTimeEntity{
     @Column(nullable = false)
     private String artist;
 
-    @ManyToOne
+    @Column
+    private String bpm;
+
+    @Column
+    private Integer seq;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    public static Song createSong(String title, String artist, String bpm, int seq, Playlist playlist){
+        return Song.builder()
+                .title(title)
+                .artist(artist)
+                .bpm(bpm)
+                .seq(seq)
+                .playlist(playlist)
+                .build();
+    }
 }
