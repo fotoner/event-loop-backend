@@ -18,7 +18,6 @@ public class UserController {
 
     @GetMapping("/me")
     public BaseResponse<UserResponse> getMyInfo(@AuthenticationPrincipal TwitterUser user) {
-
         User me = userService.findUserById(user.getUserId());
 
         return BaseResponse.OK(UserResponse.of(me));
@@ -35,7 +34,6 @@ public class UserController {
     public BaseResponse<UserResponse> updateMyInfo(
             @AuthenticationPrincipal TwitterUser user
     ) {
-
         User me = userService.findUserById(user.getUserId());
 
         return BaseResponse.OK(UserResponse.of(me));

@@ -29,6 +29,9 @@ public class Song extends BaseTimeEntity{
     @Column
     private Integer seq;
 
+    @Column
+    private String genre;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;

@@ -20,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -73,20 +74,45 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         )));
     }
 
+    private static final Pattern USER_INFO_PATTERN = Pattern.compile("^/user/info/\\d+$");
+
     private static boolean isRequestPassURI(HttpServletRequest request) {
-        if (request.getRequestURI().equals("/")) {
+        String uri = request.getRequestURI();
+
+        if (uri.equals("/")) {
             return true;
         }
 
-        if (request.getRequestURI().startsWith("/auth")) {
+        if (uri.startsWith("/auth")) {
             return true;
         }
 
-        if (request.getRequestURI().startsWith("/swagger-ui")) {
+        if (uri.startsWith("/playlist/create")) {
+            return false;
+        }
+
+        if (uri.startsWith("/playlist")) {
             return true;
         }
 
-        if (request.getRequestURI().startsWith("/api-docs")) {
+        if (uri.startsWith("/swagger-ui")) {
+            return true;
+        }
+
+        if (uri.startsWith("/api-docs")) {
+            return true;
+        }
+
+        if (uri.startsWith("/upload")) {
+            return true;
+        }
+
+        if (uri.startsWith("/user/me")) {
+            // "/user/info/{id}" 패턴에 맞으면 false 반환
+            return false;
+        }
+
+        if (uri.startsWith("/user")) {
             return true;
         }
 

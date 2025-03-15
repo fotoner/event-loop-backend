@@ -13,6 +13,7 @@ import moe.fotone.event.common.auth.TwitterUser;
 import moe.fotone.event.domain.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,7 +125,7 @@ public class PlaylistService {
             fos.write(imageBytes);
         }
 
-        return file.getAbsolutePath();
+        return fileName;
     }
 
     public PlaylistResponse getPlaylistById(Long id) {
@@ -132,5 +133,27 @@ public class PlaylistService {
                 playlistRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Playlist not found")),
                 true
         );
+    }
+
+    public Page<PlaylistResponse> getPlaylistPage(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdAt"));
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        Page<Playlist> playlistPage = playlistRepository.findAll(pageable);
+
+        List<PlaylistResponse> playlistResponses = playlistPage.getContent().stream()
+                .map(playlist -> PlaylistResponse.fromEntity(playlist, false))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(playlistResponses, pageable, playlistPage.getTotalElements());
+    }
+
+    public List<PlaylistResponse> getPlaylistsByUser(Long id) {
+        List<Playlist> playlists = playlistRepository.findByUserId(id);
+        return playlists.stream()
+                .map(playlist -> PlaylistResponse.fromEntity(playlist, false))
+                .collect(Collectors.toList());
     }
 }

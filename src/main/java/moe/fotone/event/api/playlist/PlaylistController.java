@@ -7,6 +7,7 @@ import moe.fotone.event.api.playlist.request.PlaylistRequest;
 import moe.fotone.event.api.playlist.response.PlaylistResponse;
 import moe.fotone.event.api.playlist.service.PlaylistService;
 import moe.fotone.event.common.auth.TwitterUser;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,11 @@ public class PlaylistController {
         return BaseResponse.OK(playlistService.getLatestPlaylists());
     }
 
+    @GetMapping("/page")
+    public BaseResponse<Page<PlaylistResponse>> getPlaylistsPage(@RequestParam(value="page", defaultValue="0") int page){
+        return BaseResponse.OK(playlistService.getPlaylistPage(page));
+    }
+
     @PostMapping("/create")
     public BaseResponse<Long> createPlaylist(
             @AuthenticationPrincipal TwitterUser user,
@@ -38,5 +44,10 @@ public class PlaylistController {
     @GetMapping("/{id}")
     public BaseResponse<PlaylistResponse> getPlaylistById(@PathVariable Long id) {
         return BaseResponse.OK(playlistService.getPlaylistById(id));
+    }
+
+    @GetMapping("/user/{id}")
+    public BaseResponse<List<PlaylistResponse>> getPlaylistsByUser(@PathVariable Long id) {
+        return BaseResponse.OK(playlistService.getPlaylistsByUser(id));
     }
 }

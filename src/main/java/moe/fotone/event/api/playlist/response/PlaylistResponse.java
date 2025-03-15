@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import moe.fotone.event.domain.Playlist;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,9 @@ public class PlaylistResponse {
     private String cover;
     private List<String> tags;
     private List<SongResponse> songs;
+    private String username;
+    private String userId;
+    private LocalDateTime createdAt;
 
     public static PlaylistResponse fromEntity(Playlist playlist, boolean includeSongs) {
         return new PlaylistResponse(
@@ -30,7 +34,10 @@ public class PlaylistResponse {
                         .collect(Collectors.toList()),
                 includeSongs ? playlist.getSongs().stream()
                         .map(SongResponse::fromEntity)
-                        .collect(Collectors.toList()) : null
+                        .collect(Collectors.toList()) : null,
+                playlist.getUser().getName(),
+                playlist.getUser().getId().toString(),
+                playlist.getCreatedAt()
         );
     }
 }

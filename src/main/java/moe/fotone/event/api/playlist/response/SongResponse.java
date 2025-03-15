@@ -13,6 +13,7 @@ public class SongResponse {
     private String title;
     private String artist;
     private String bpm;
+    private String genre;
     private Integer seq;
 
     public static SongResponse fromEntity(Song song) {
@@ -21,6 +22,7 @@ public class SongResponse {
                 song.getTitle(),
                 song.getArtist(),
                 song.getBpm(),
+                song.getGenre(),
                 song.getSeq()
         );
     }
