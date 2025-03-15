@@ -12,6 +12,7 @@ import moe.fotone.event.api.user.repository.UserRepository;
 import moe.fotone.event.common.auth.jwt.service.JwtService;
 import moe.fotone.event.domain.User;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,10 +32,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-
+        log.info("HttpMethod = {}, URI = {}", request.getMethod(), request.getRequestURI());
         String token = jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
+
+        if(isRequestPassURI(request)) {
+            Objects.requireNonNull(filterChain).doFilter(request, response);
+            return;
+        }
+
+        if(token == null) {
+            setErrorResponse(response);
+            return;
+        }
+
+        Authentication authentication = jwtService.getAuthentication(token);
+
+        if (authentication == null) {
+            log.error("JWT 인증 정보가 NULL입니다. SecurityContext에 설정하지 않습니다.");
+            setErrorResponse(response);
+            return;
+        }
+        log.info("SecurityContext에 저장된 Authentication: {}", authentication.getPrincipal());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Objects.requireNonNull(filterChain).doFilter(request, response);
     }
@@ -49,5 +71,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 "status", HttpStatus.UNAUTHORIZED.value(),
                 "error", "유효하지 않은 토큰입니다."
         )));
+    }
+
+    private static boolean isRequestPassURI(HttpServletRequest request) {
+        if (request.getRequestURI().equals("/")) {
+            return true;
+        }
+
+        if (request.getRequestURI().startsWith("/auth")) {
+            return true;
+        }
+
+        if (request.getRequestURI().startsWith("/swagger-ui")) {
+            return true;
+        }
+
+        if (request.getRequestURI().startsWith("/api-docs")) {
+            return true;
+        }
+
+        return false;
     }
 }

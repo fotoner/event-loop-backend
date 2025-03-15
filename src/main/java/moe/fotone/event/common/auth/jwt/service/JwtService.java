@@ -4,7 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import moe.fotone.event.api.user.repository.UserRepository;
 import moe.fotone.event.common.auth.TwitterUser;
 import moe.fotone.event.domain.Role;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,25 +41,25 @@ public class JwtService {
     @Value("${jwt.access.header}")
     private String accessHeader;
 
-    @Value("${jwt.refresh.header}")
-    private String refreshHeader;
+    @Value("${jwt.refresh.name}")
+    private String refreshTokenCookieName;
 
+    private static final int DEFAULT_EXPIRATION = 24 * 60 * 60;
+    private static final String COOKIE_PATH = "/";
 
     private static final String ID_CLAIM = "id";
-    private static final String EMAIL_CLAIM = "email";
     private static final String ROLE_CLAIM = "role";
     private static final String BEARER = "Bearer ";
 
     private final UserRepository userRepository;
 
-    public String createAccessToken(String email, Long userId, String role) {
+    public String createAccessToken(Long userId, String role) {
         Date now = new Date();
 
         return JWT.create()
                 .withSubject(accessHeader)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(ID_CLAIM, userId)
-                .withClaim(EMAIL_CLAIM, email)
                 .withClaim(ROLE_CLAIM, role)
                 .sign(Algorithm.HMAC512(secretKey));
     }
@@ -64,7 +67,7 @@ public class JwtService {
     public String createRefreshToken() {
         Date now = new Date();
         return JWT.create()
-                .withSubject(refreshHeader)
+                .withSubject(refreshTokenCookieName)
                 .withExpiresAt(new Date(now.getTime() + refreshTokenExpirationPeriod))
                 .sign(Algorithm.HMAC512(secretKey));
     }
@@ -81,9 +84,9 @@ public class JwtService {
                 .map(SimpleGrantedAuthority::new)
                 .toList();
 
+        log.info("id = {}, role = {}", claims.get(ID_CLAIM).asLong(), claims.get(ROLE_CLAIM).asString());
         TwitterUser user = new TwitterUser(
                 claims.get(ID_CLAIM).asLong(),
-                claims.get(EMAIL_CLAIM).asString(),
                 Role.fromString(claims.get(ROLE_CLAIM).asString()),
                 simpleGrantedAuthorities,
                 Map.of()
@@ -98,10 +101,42 @@ public class JwtService {
                 .map(token -> token.replace(BEARER, ""));
     }
 
+    public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        addRefreshTokenCookie(response, refreshToken, DEFAULT_EXPIRATION);
+    }
+
+    public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken, int maxAge) {
+        ResponseCookie cookie = ResponseCookie.from(refreshTokenCookieName, refreshToken)
+                .path(COOKIE_PATH)
+                .maxAge(maxAge)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public void removeRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from(refreshTokenCookieName, "")
+                .path(COOKIE_PATH)
+                .maxAge(0)  // 즉시 만료
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(token -> token.startsWith(BEARER))
-                .map(token -> token.replace(BEARER, ""));
+        return Optional.ofNullable(request.getCookies())
+                .map(Arrays::asList)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(cookie -> refreshTokenCookieName.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findAny();
     }
 
     public boolean isTokenValid(String token) {

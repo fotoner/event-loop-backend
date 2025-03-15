@@ -18,12 +18,19 @@ public class TwitterUserInfo extends OAuth2UserInfo{
     }
 
     private Map<String, Object> getData() {
-        return convertToMap(attributes.get("data"));
+        Object dataObj = attributes.get("data");
+        if (dataObj == null) {
+            throw new IllegalStateException("TwitterUserInfo: 'data' 필드가 존재하지 않습니다.");
+        }
+        return convertToMap(dataObj);
     }
 
     @Override
     public String getId() {
         Map<String, Object> data = getData();
+        if (data == null || !data.containsKey("id")) {
+            throw new IllegalStateException("TwitterUserInfo: 'id' 필드가 존재하지 않습니다.");
+        }
         return (String) data.get("id");
     }
 

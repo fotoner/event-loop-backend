@@ -15,14 +15,13 @@ import java.util.Map;
 public class TwitterUser implements OAuth2User {
 
     private final Long userId;
-    private final String email;
     private final Role role;
     private final List<? extends GrantedAuthority> authorities;
     private final Map<String, Object> attributes;
 
     @Override
     public String getName() {
-        return email;
+        return userId.toString();
     }
 
     @Override

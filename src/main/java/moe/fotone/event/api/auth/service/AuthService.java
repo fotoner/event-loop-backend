@@ -7,6 +7,7 @@ import moe.fotone.event.api.auth.response.TokenServiceResponse;
 import moe.fotone.event.api.user.repository.UserRepository;
 import moe.fotone.event.common.auth.jwt.service.JwtService;
 import moe.fotone.event.domain.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,7 @@ public class AuthService {
         String token = twitterLogin.getToken(code);
         User user = twitterLogin.getUser(token);
 
-        String accessToken = jwtService.createAccessToken(user.getEmail(), user.getId(), String.valueOf(user.getRole()));
+        String accessToken = jwtService.createAccessToken(user.getId(), String.valueOf(user.getRole()));
         String refreshToken = jwtService.createRefreshToken();
 
         TokenServiceResponse tokenServiceResponse = TokenServiceResponse.of(accessToken, refreshToken);

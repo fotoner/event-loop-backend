@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 @Getter
 @RequiredArgsConstructor
 public enum Role {
-    ADMIN("ROLE_ADMIN", "관리자"),
-    USER("ROLE_USER", "사용자"),
-    GUEST("ROLE_GUEST", "게스트");
+    ADMIN("ADMIN", "관리자"),
+    USER("USER", "사용자"),
+    GUEST("GUEST", "게스트");
 
     private static final Logger log = LoggerFactory.getLogger(Role.class);
     private final String key;
