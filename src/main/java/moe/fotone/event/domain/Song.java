@@ -36,12 +36,13 @@ public class Song extends BaseTimeEntity{
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;
 
-    public static Song createSong(String title, String artist, String bpm, int seq, Playlist playlist){
+    public static Song createSong(String title, String artist, String bpm, int seq, String genre, Playlist playlist){
         return Song.builder()
                 .title(title)
                 .artist(artist)
                 .bpm(bpm)
                 .seq(seq)
+                .genre(genre)
                 .playlist(playlist)
                 .build();
     }

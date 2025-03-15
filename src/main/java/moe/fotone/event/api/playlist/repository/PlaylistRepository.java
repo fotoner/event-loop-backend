@@ -14,5 +14,5 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     Page<Playlist> findAll(Pageable pageable);
 
-    List<Playlist> findByUserId(Long id);
+    List<Playlist> findByUserIdOrderByCreatedAtDesc(Long id);
 }

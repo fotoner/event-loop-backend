@@ -68,7 +68,7 @@ public class PlaylistService {
         List<Song> songs = new ArrayList<>();
         for (int i = 0; i < request.getSongs().size(); i++) {
             var songRequest = request.getSongs().get(i);
-            Song song = Song.createSong(songRequest.getTitle(), songRequest.getArtist(), songRequest.getBpm(), i + 1, playlist);
+            Song song = Song.createSong(songRequest.getTitle(), songRequest.getArtist(), songRequest.getBpm(), i + 1, songRequest.getGenre(), playlist);
             songs.add(song);
         }
         songRepository.saveAll(songs);
@@ -148,7 +148,7 @@ public class PlaylistService {
     }
 
     public List<PlaylistResponse> getPlaylistsByUser(Long id) {
-        List<Playlist> playlists = playlistRepository.findByUserId(id);
+        List<Playlist> playlists = playlistRepository.findByUserIdOrderByCreatedAtDesc(id);
         return playlists.stream()
                 .map(playlist -> PlaylistResponse.fromEntity(playlist, false))
                 .collect(Collectors.toList());
